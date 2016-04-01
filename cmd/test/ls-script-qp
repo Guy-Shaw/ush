@@ -1,0 +1,13 @@
+#! /usr/local/bin/ush --qp
+
+--debug
+--chdir=3D.
+--chdir=3D.
+--chdir=3D.
+--chdir=3D.
+--
+ls
+--color=3Dtty
+--time-style=3D+%Y-%m-%d %H:%M
+Funny=10filename
+{{}}

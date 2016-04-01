@@ -1,0 +1,7 @@
+#! /usr/local/bin/ush --
+
+### --debug
+--
+ls
+--color=tty
+--time-style=+%Y-%m-%d %H:%M
