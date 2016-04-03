@@ -64,8 +64,10 @@ enum opt {
     OPT_CHDIR,
     OPT_SET_STDIN,
     OPT_SET_STDOUT,
+    OPT_SET_STDOUT_APPEND,
     OPT_SET_STDOUT_NEW,
     OPT_SET_STDERR,
+    OPT_SET_STDERR_APPEND,
     OPT_SET_STDERR_NEW,
     OPT_UMASK,
     OPT_CLOSE_FROM,
@@ -82,8 +84,10 @@ static struct option long_options[] = {
     {"fork",              no_argument,       0,  OPT_FORK},
     {"stdin",             required_argument, 0,  OPT_SET_STDIN},
     {"stdout",            required_argument, 0,  OPT_SET_STDOUT},
+    {"stdout-append",     required_argument, 0,  OPT_SET_STDOUT_APPEND},
     {"stdout-new",        required_argument, 0,  OPT_SET_STDOUT_NEW},
     {"stderr",            required_argument, 0,  OPT_SET_STDERR},
+    {"stderr-append",     required_argument, 0,  OPT_SET_STDERR_APPEND},
     {"stderr-new",        required_argument, 0,  OPT_SET_STDERR_NEW},
     {"chdir",             required_argument, 0,  OPT_CHDIR},
     {"umask",             required_argument, 0,  OPT_UMASK},
@@ -98,18 +102,20 @@ static const char usage_text[] =
     "  --verbose|-v      verbose\n"
     "  --debug|-d        debug\n"
     "  --command\n"
-    "  --append-argv\n"
     "  --show-argv\n"
-    "  --stdin      <filename>\n"
-    "  --stdout     <filename>\n"
-    "  --stdout-new <filename>\n"
-    "  --stderr     <filename>\n"
-    "  --stderr-new <filename>\n"
-    "  --close-from <fd>\n"
-    "  --chdir      <directory>\n"
+    "  --stdin         <filename>\n"
+    "  --stdout        <filename>\n"
+    "  --stdout-append <filename>\n"
+    "  --stdout-new    <filename>\n"
+    "  --stderr        <filename>\n"
+    "  --stderr-append <filename>\n"
+    "  --stderr-new    <filename>\n"
+    "  --close-from    <fd>\n"
+    "  --chdir         <directory>\n"
     "  --fork\n"
-    "  --replace    <string>\n"
-    "  --encoding   text|null|qp|xnn\n"
+    "  --append-argv\n"
+    "  --replace       <string>\n"
+    "  --encoding      text|null|qp|xnn\n"
     ;
 
 static void
@@ -225,6 +231,7 @@ ush_getopt(cmd_t *cmd, int argc, char **argv, bool setargv)
             eprintf("\n");
         }
 
+        rv = 0;
         switch (optc) {
         case 'd':
             debug = true;
@@ -254,29 +261,28 @@ ush_getopt(cmd_t *cmd, int argc, char **argv, bool setargv)
             cmd_umask(cmd, optarg);
             break;
         case OPT_SET_STDIN:
-            set_stdin(cmd, optarg);
+            rv = set_stdin(cmd, optarg);
             break;
         case OPT_SET_STDOUT:
-            cmd->child_stdout_new = false;
-            set_stdout(cmd, optarg);
+            rv = set_stdout(cmd, optarg, false, false);
+            break;
+        case OPT_SET_STDOUT_APPEND:
+            rv = set_stdout(cmd, optarg, true, false);
             break;
         case OPT_SET_STDOUT_NEW:
-            cmd->child_stdout_new = true;
-            set_stdout(cmd, optarg);
+            rv = set_stdout(cmd, optarg, false, true);
             break;
         case OPT_SET_STDERR:
-            cmd->child_stderr_new = false;
-            set_stderr(cmd, optarg);
+            rv = set_stderr(cmd, optarg, false, false);
+            break;
+        case OPT_SET_STDERR_APPEND:
+            rv = set_stderr(cmd, optarg, true, false);
             break;
         case OPT_SET_STDERR_NEW:
-            cmd->child_stderr_new = true;
-            set_stderr(cmd, optarg);
+            rv = set_stderr(cmd, optarg, false, true);
             break;
         case OPT_CLOSE_FROM:
             rv = ush_close_from(optarg);
-            if (rv) {
-                ++err_count;
-            }
             break;
         case OPT_REPLACE:
             replace = optarg;
@@ -306,6 +312,10 @@ ush_getopt(cmd_t *cmd, int argc, char **argv, bool setargv)
             }
             exit(2);
             break;
+        }
+
+        if (rv) {
+            ++err_count;
         }
     }
 

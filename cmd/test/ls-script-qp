@@ -1,13 +1,10 @@
-#! /usr/local/bin/ush --qp
+#! /usr/local/bin/ush --encoding=qp
 
 --debug
 --chdir=3D.
---chdir=3D.
---chdir=3D.
---chdir=3D.
+--append-argv
 --
 ls
 --color=3Dtty
 --time-style=3D+%Y-%m-%d %H:%M
 Funny=10filename
-{{}}

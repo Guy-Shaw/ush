@@ -26,8 +26,10 @@ struct cmd {
     // Actions -- after fork(), if any, and before exec()
     const char *child_stdin;
     const char *child_stdout;
+    bool  child_stdout_append;
     bool  child_stdout_new;
     const char *child_stderr;
+    bool  child_stderr_append;
     bool  child_stderr_new;
     int   ioerr;
     bool  surprise;
@@ -55,8 +57,8 @@ typedef enum encoding encoding_t;
 extern void cmd_chdir(cmd_t *, const char *dir);
 extern void cmd_umask(cmd_t *, const char *mask);
 extern int set_stdin (cmd_t *, const char *fname);
-extern int set_stdout(cmd_t *, const char *fname);
-extern int set_stderr(cmd_t *, const char *fname);
+extern int set_stdout(cmd_t *, const char *fname, bool append, bool new);
+extern int set_stderr(cmd_t *, const char *fname, bool append, bool new);
 extern int ush_close_from(const char *start_fd);
 
 extern int run_program(cmd_t *);

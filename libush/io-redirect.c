@@ -1,7 +1,7 @@
 /*
  * Filename: io-redirect.c
  * Library: libush
- * Brief: Do all redeirection of I/O befor running cild process
+ * Brief: Do all redeirection of I/O before running cild process
  *
  * Copyright (C) 2016 Guy Shaw
  * Written by Guy Shaw <gshaw@acm.org>
@@ -56,21 +56,19 @@ set_stdin(cmd_t *cmd, const char *fname)
 }
 
 int
-set_stdout(cmd_t *cmd, const char *fname)
+set_write_fd(int fd, cmd_t *cmd, const char *fname, bool append, bool new)
 {
     int old_fd;
     int new_fd;
     int o_flags;
 
-    cmd->child_stdout = fname;
-
-    if (cmd->child_stdout_new) {
+    if (new) {
         int rv;
 
         rv = access(fname, F_OK);
         if (rv == 0) {
-            fprintf(stderr, "File, '%s' already exists.\n", cmd->child_stdout);
-            lsdlh(cmd->child_stdout);
+            fprintf(stderr, "File, '%s' already exists.\n", fname);
+            lsdlh(fname);
             cmd->ioerr = EEXIST;
             return (EEXIST);
         }
@@ -82,12 +80,12 @@ set_stdout(cmd_t *cmd, const char *fname)
         cmd->ioerr = errno;
         return (errno);
     }
-    new_fd = dup2(old_fd, 1);
+    new_fd = dup2(old_fd, fd);
     if (new_fd == -1) {
         cmd->ioerr = errno;
         return (errno);
     }
-    if (new_fd != 1) {
+    if (new_fd != fd) {
         cmd->ioerr = 0;
         cmd->surprise = 1;
         return (126);
@@ -97,44 +95,27 @@ set_stdout(cmd_t *cmd, const char *fname)
 }
 
 int
-set_stderr(cmd_t *cmd, const char *fname)
+set_stdout(cmd_t *cmd, const char *fname, bool append, bool new)
 {
-    int old_fd;
-    int new_fd;
-    int o_flags;
+    int rv;
 
-    cmd->child_stderr = fname;
+    cmd->child_stdout        = fname;
+    cmd->child_stdout_append = append;
+    cmd->child_stdout_new    = new;
+    rv = set_write_fd(1, cmd, fname, append, new);
+    return (rv);
+}
 
-    if (cmd->child_stderr_new) {
-        int rv;
+int
+set_stderr(cmd_t *cmd, const char *fname, bool append, bool new)
+{
+    int rv;
 
-        rv = access(fname, F_OK);
-        if (rv == 0) {
-            fprintf(stderr, "File, '%s' already exists.\n", cmd->child_stderr);
-            lsdlh(cmd->child_stderr);
-            cmd->ioerr = EEXIST;
-            return (EEXIST);
-        }
-    }
-
-    o_flags = O_CREAT|O_WRONLY;
-    old_fd = open(fname, o_flags, S_IRUSR|S_IWUSR);
-    if (old_fd == -1) {
-        cmd->ioerr = errno;
-        return (errno);
-    }
-    new_fd = dup2(old_fd, 2);
-    if (new_fd == -1) {
-        cmd->ioerr = errno;
-        return (errno);
-    }
-    if (new_fd != 2) {
-        cmd->ioerr = 0;
-        cmd->surprise = 1;
-        return (126);
-    }
-    close(old_fd);
-    return (0);
+    cmd->child_stderr        = fname;
+    cmd->child_stderr_append = append;
+    cmd->child_stderr_new    = new;
+    rv = set_write_fd(2, cmd, fname, append, new);
+    return (rv);
 }
 
 static bool

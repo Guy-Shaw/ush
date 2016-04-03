@@ -177,7 +177,9 @@ run_interpret_linebuf(cmd_t *cmd, linebuf_t *lbuf)
     char **cmd_argv;
     int    cmd_argc;
     bool in_argv;
+    int err_count;
 
+    err_count = 0;
     while (true) {
         fgetline(lbuf);
         if (lbuf->eof) {
@@ -205,13 +207,20 @@ run_interpret_linebuf(cmd_t *cmd, linebuf_t *lbuf)
             optv[0] = ":";
             optv[1] = lbuf->buf;
             optv[2] = NULL;
-            ush_getopt(cmd, 2, &optv[0], false);
+            rv = ush_getopt(cmd, 2, &optv[0], false);
+            if (rv) {
+                ++err_count;
+            }
         }
+    }
+
+    if (err_count) {
+        return (EFAULT);
     }
 
     if (scn == SECTION_EOF) {
         linebuf_free(lbuf);
-        return (rv);
+        return (EFAULT);
     }
 
     cmd_strv = strv_null;
