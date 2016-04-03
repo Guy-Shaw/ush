@@ -7,6 +7,32 @@ syntax.  It is designed to provide just enough functionality
 to cover 80-90% of the use cases of `system()` and `exec()`
 functions in other languages, but more safely and efficiently.
 
+## Table of contents
+
+[Introduction](#Introduction)
+++ [Scripts](Scripts)
+++++ [Encoding of scripts](Encoding-of-scripts)
+++++ [Why another encoding?](Why-another-encoding?)
+++ [Error reporting](Error-reporting)
+++ [Options and commands](Options-and-commands)
+++++ [I/O redirection](I/O-redirection)
+++++ [Script files](Script-files)
+++ [Environment](Environment)
+++ [Dependencies](Dependencies)
+++++ [libush](libush)
+++++ [libcscript](libcscript)
+++++ [libexplain](libexplain)
+++ [Portability](Portability)
+++ [Cleanliness](Cleanliness)
+++ [Coding style](Coding-style)
+++ [No limits](No-limits)
+++ [Examples](Examples)
++++ [Shell one-liner](Shell-one-liner)
++++ [Calling a libush function from C code](Calling-a-libush-function-from-C-code)
++++ [As a script](As-a-script)
+
+
+## Introduction
 The `libush` function `ush_argv()` is more or less like
 the `exec()` and `system()` functions that exist in C
 and in higher-level languages like Perl, Python, Ruby, etc.
@@ -100,7 +126,7 @@ First comes all the option commands, executed in order;
 then comes a line consisting of nothing but '--' to end the options;
 then comes the command path followed by all the arguments.
 
-## Encoding of scripts
+#### Encoding of scripts
 
 One thing different about parsing of options from a script
 is that there is a choice of encodings.  The "lines" read in
@@ -110,7 +136,7 @@ or quoted-printable (--encoding=qp) or xnn.
 Null and qouted-printable are widely known, even standards.
 Xnn encoding I just made up.
 
-## Why another encoding?
+#### Why another encoding?
 
 The reason for going with yet another encoding is that I like
 to easily edit scripts with a text editor, and use all the Unix
@@ -350,7 +376,7 @@ In this case it is not really necessary,
 because the `\x20` in the time-style argument is not really
 necessary, because `ush` treats each whole line as an argument,
 and spaces are nothing special.  But, an explicit`\x20`
-makes it more clear the reader that this is a single argument
+makes it more clear to the reader that this is a single argument
 with a space in it.
 
 Note also that quote marks do not do any good here.
