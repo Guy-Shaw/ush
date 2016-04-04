@@ -75,6 +75,9 @@ set_write_fd(int fd, cmd_t *cmd, const char *fname, bool append, bool new)
     }
 
     o_flags = O_CREAT|O_WRONLY;
+    if (append) {
+        o_flags |= O_APPEND;
+    }
     old_fd = open(fname, o_flags, S_IRUSR|S_IWUSR);
     if (old_fd == -1) {
         cmd->ioerr = errno;
