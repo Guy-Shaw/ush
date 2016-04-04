@@ -1,4 +1,4 @@
-# ush -- micro-shell
+# &micro;sh -- micro-shell
 
 ## a very light-weight "shell" library and command
 
