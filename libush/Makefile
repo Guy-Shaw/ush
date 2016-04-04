@@ -3,12 +3,9 @@ LIBRARY := libush
 SOURCES := $(wildcard *.c)
 OBJECTS := $(patsubst %.c, %.o, $(SOURCES))
 
-# CC := clang
-# CFLAGS += -I../inc -g3 -fsanitize=undefined
-
-CC := clang
-CFLAGS += -g
-CPPFLAGS := -I../inc -I/usr/local/include
+CC := gcc
+CFLAGS += -std=c99 -Wall -Wextra -g
+CPPFLAGS := -I../inc
 
 .PHONY: all clean
 

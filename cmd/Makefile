@@ -4,9 +4,9 @@ OBJECTS := $(patsubst %.c,%.o,$(SOURCES))
 PROGRAMS := $(patsubst %.c,%,$(SOURCES))
 DISTBIN := /usr/local/bin
 
-CC := clang
+CC := gcc
 CPPFLAGS := -I../inc
-CFLAGS := -g
+CFLAGS := -Wall -Wextra -g
 
 LIBCSCRIPT := ../libcscript/libcscript.a
 
