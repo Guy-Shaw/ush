@@ -76,7 +76,9 @@ enum opt {
 };
 
 static struct option long_options[] = {
-    {"verbose",           no_argument,       0,  'v'},
+   
+    {"help",              no_argument,       0,  'h'},
+    {"version",           no_argument,       0,  'V'},
     {"debug",             no_argument,       0,  'd'},
     {"command",           no_argument,       0,  'c'},
     {"append-argv",       no_argument,       0,  OPT_APPEND_ARGV},
@@ -99,6 +101,8 @@ static struct option long_options[] = {
 
 static const char usage_text[] =
     "Options:\n"
+    "  --help|-h|-?      Show this help message an exit\n"
+    "  --version         Show ush version information an exit\n"
     "  --verbose|-v      verbose\n"
     "  --debug|-d        debug\n"
     "  --command\n"
@@ -117,6 +121,39 @@ static const char usage_text[] =
     "  --replace       <string>\n"
     "  --encoding      text|null|qp|xnn\n"
     ;
+
+static const char version_text[] =
+    "0.1\n"
+    ;
+
+static const char copyright_text[] =
+    "Copyright (C) 2016 Guy Shaw\n"
+    "Written by Guy Shaw\n"
+    ;
+
+static const char license_text[] =
+    "License GPLv3+: GNU GPL version 3 or later"
+    " <http://gnu.org/licenses/gpl.html>.\n"
+    "This is free software: you are free to change and redistribute it.\n"
+    "There is NO WARRANTY, to the extent permitted by law.\n"
+    ;
+
+static void
+fshow_ush_version(FILE *f)
+{
+    fputs(version_text, f);
+    fputc('\n', f);
+    fputs(copyright_text, f);
+    fputc('\n', f);
+    fputs(license_text, f);
+    fputc('\n', f);
+}
+
+static void
+show_ush_version(void)
+{
+    fshow_ush_version(stdout);
+}
 
 static void
 usage(void)
@@ -213,7 +250,7 @@ ush_getopt(cmd_t *cmd, int argc, char **argv, bool setargv)
         this_option_optind = optind ? optind : 1;
         getopt_ctx.optind = optind;
         getopt_ctx.opterr = opterr;
-        optc = cs_getopt_internal_r(argc, argv, "+cdv", long_options, &option_index, 0, &getopt_ctx, 0);
+        optc = cs_getopt_internal_r(argc, argv, "+hVcdv", long_options, &option_index, 0, &getopt_ctx, 0);
 
         optind = getopt_ctx.optind;
         optarg = getopt_ctx.optarg;
@@ -232,7 +269,19 @@ ush_getopt(cmd_t *cmd, int argc, char **argv, bool setargv)
         }
 
         rv = 0;
+        if (optc == '?' && optopt == '?') {
+            optc = 'h';
+        }
+
         switch (optc) {
+        case 'V':
+            show_ush_version();
+            exit(0);
+            break;
+        case 'h':
+            fputs(usage_text, stdout);
+            exit(0);
+            break;
         case 'd':
             debug = true;
             break;
@@ -288,7 +337,6 @@ ush_getopt(cmd_t *cmd, int argc, char **argv, bool setargv)
             replace = optarg;
             break;
         case '?':
-            dbg_printf("???\n");
             eprint(program_name);
             eprint(": ");
             if (is_long_option(argv[this_option_optind])) {
