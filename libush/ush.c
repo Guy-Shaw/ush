@@ -101,8 +101,8 @@ static struct option long_options[] = {
 
 static const char usage_text[] =
     "Options:\n"
-    "  --help|-h|-?      Show this help message an exit\n"
-    "  --version         Show ush version information an exit\n"
+    "  --help|-h|-?      Show this help message and exit\n"
+    "  --version         Show ush version information and exit\n"
     "  --verbose|-v      verbose\n"
     "  --debug|-d        debug\n"
     "  --command\n"
