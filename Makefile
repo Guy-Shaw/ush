@@ -1,20 +1,18 @@
-.PHONY: all clean
+.PHONY: all .FORCE clean
 
 all: cmd/ush
 
-cmd/ush: libush/libush.a  libcscript/libcscript.a
-	cd cmd && make
-
-libush/libush.a:
-	cd libush && make
-
-libcscript/libcscript.a:
+cmd/ush: .FORCE
 	cd libcscript && make
+	cd libush && make
+	cd cmd && make
 
 clean:
 	cd libush && make clean
 	cd libcscript && make clean
 	cd cmd && make clean
+
+.FORCE:
 
 show-targets:
 	@show-makefile-targets
