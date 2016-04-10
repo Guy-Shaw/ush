@@ -54,7 +54,7 @@ static bool opt_show_argv = false;
 FILE *errprint_fh = NULL;
 FILE *dbgprint_fh = NULL;
 
-static char *program_name = "ush";
+static char program_name[] = "ush";
 
 enum opt {
     OPT_BASE = 0xf000,
@@ -78,6 +78,7 @@ enum opt {
 static struct option long_options[] = {
     {"help",              no_argument,       0,  'h'},
     {"version",           no_argument,       0,  'V'},
+    {"verbose",           no_argument,       0,  'v'},
     {"debug",             no_argument,       0,  'd'},
     {"command",           no_argument,       0,  'c'},
     {"append-argv",       no_argument,       0,  OPT_APPEND_ARGV},
@@ -249,7 +250,7 @@ ush_getopt(cmd_t *cmd, int argc, char **argv, bool setargv)
         this_option_optind = optind ? optind : 1;
         getopt_ctx.optind = optind;
         getopt_ctx.opterr = opterr;
-        optc = cs_getopt_internal_r(argc, argv, "+hVcdv", long_options, &option_index, 0, &getopt_ctx, 0);
+        optc = cs_getopt_internal_r(argc, argv, "+hVdvc", long_options, &option_index, 0, &getopt_ctx, 0);
 
         optind = getopt_ctx.optind;
         optarg = getopt_ctx.optarg;
@@ -460,11 +461,12 @@ ush(int argc, char **argv)
     char **cmd_argv;
     size_t cmd_argv_sz;
     int rv;
+    char ush_path[] = "ush";
 
     set_print_fh();
     cmd_argv_sz = (argc + 2) * sizeof (char *);
-    cmd_argv = guard_malloc(cmd_argv_sz);
-    cmd_argv[0] = "ush";
+    cmd_argv = (char **)guard_malloc(cmd_argv_sz);
+    cmd_argv[0] = ush_path;
     memcpy(cmd_argv + 1, argv, (argc + 1) * sizeof (char *));
     rv = ush_argv(argc + 1, cmd_argv);
     free(cmd_argv);

@@ -113,7 +113,7 @@ extern int    filev_by_line(uint_t filec, char **filev);
 extern int    filev_by_paragraph(uint_t filec, char **filev);
 extern void   fshow_str_array(FILE *, uint_t, char * const *);
 extern size_t fshow_str(FILE *, char *);
-extern void   fshow_errno(FILE *f, char *msg, int err);
+extern void   fshow_errno(FILE *f, const char *msg, int err);
 extern void   fshow_fname(FILE *f, const char *fname);
 extern void   fshow_wait_status(FILE *, const char *, int);
 extern const char * sname(const char *);

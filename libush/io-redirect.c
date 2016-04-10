@@ -56,13 +56,13 @@ set_stdin(cmd_t *cmd, const char *fname)
 }
 
 int
-set_write_fd(int fd, cmd_t *cmd, const char *fname, bool append, bool new)
+set_write_fd(int fd, cmd_t *cmd, const char *fname, bool append, bool new_file)
 {
     int old_fd;
     int new_fd;
     int o_flags;
 
-    if (new) {
+    if (new_file) {
         int rv;
 
         rv = access(fname, F_OK);
@@ -98,26 +98,26 @@ set_write_fd(int fd, cmd_t *cmd, const char *fname, bool append, bool new)
 }
 
 int
-set_stdout(cmd_t *cmd, const char *fname, bool append, bool new)
+set_stdout(cmd_t *cmd, const char *fname, bool append, bool new_file)
 {
     int rv;
 
     cmd->child_stdout        = fname;
     cmd->child_stdout_append = append;
-    cmd->child_stdout_new    = new;
-    rv = set_write_fd(1, cmd, fname, append, new);
+    cmd->child_stdout_new    = new_file;
+    rv = set_write_fd(1, cmd, fname, append, new_file);
     return (rv);
 }
 
 int
-set_stderr(cmd_t *cmd, const char *fname, bool append, bool new)
+set_stderr(cmd_t *cmd, const char *fname, bool append, bool new_file)
 {
     int rv;
 
     cmd->child_stderr        = fname;
     cmd->child_stderr_append = append;
-    cmd->child_stderr_new    = new;
-    rv = set_write_fd(2, cmd, fname, append, new);
+    cmd->child_stderr_new    = new_file;
+    rv = set_write_fd(2, cmd, fname, append, new_file);
     return (rv);
 }
 

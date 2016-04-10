@@ -112,7 +112,6 @@ void
 cmd_umask(cmd_t *cmd, const char *mask_str)
 {
     int rv;
-    int err;
     unsigned long int lmask;
     mode_t mask;
     bool have_mask = false;

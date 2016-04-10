@@ -24,7 +24,9 @@
 #include <cscript.h>
 #include <cs-strv.h>
 #include <unistd.h>
-#include <string.h>     // Import strdup()
+#include <string.h>     // Import strlen(), strcmp()
+
+extern char *strdup(const char *s);
 
 #include <libexplain/fopen.h>
 #include <libexplain/fclose.h>
@@ -74,7 +76,6 @@ get_line_xnn(linebuf_t *lbuf)
     extern ssize_t xnn_decode_str(char *buf, size_t sz, const char *str);
     char *rbuf;
     ssize_t qprv;
-    int chr;
 
     rbuf = sgl_fgetline(lbuf, '\n');
 
@@ -102,7 +103,6 @@ get_line_qp(linebuf_t *lbuf)
     extern ssize_t qp_decode_str(char *buf, size_t sz, const char *str);
     char *rbuf;
     ssize_t qprv;
-    int chr;
 
     rbuf = sgl_fgetline(lbuf, '\n');
 
@@ -128,7 +128,6 @@ static void
 fgetline(linebuf_t *lbuf)
 {
     char *rbuf;
-    int err;
 
     dbg_printf("> %s\n", __FUNCTION__);
 
@@ -199,12 +198,13 @@ run_interpret_linebuf(cmd_t *cmd, linebuf_t *lbuf)
 
         if (lbuf->buf[0] == '-') {
             char  *optv[3];
-            optv[0] = ":";
-            optv[1] = ":";
+            char  dummy[] = ":";
+            optv[0] = dummy;
+            optv[1] = dummy;
             optv[2] = NULL;
             ush_getopt(cmd, 2, &optv[0], false);
             dbg_printf("option: [%s]\n", lbuf->buf);
-            optv[0] = ":";
+            optv[0] = dummy;
             optv[1] = lbuf->buf;
             optv[2] = NULL;
             rv = ush_getopt(cmd, 2, &optv[0], false);
@@ -254,10 +254,10 @@ run_interpret_linebuf(cmd_t *cmd, linebuf_t *lbuf)
             if (cmd->argc >= 2) {
                 strv_alloc(&cmd_strv, cmd->argc - 1);
                 cmd_argv = cmd_strv.strv;
-                for (size_t i = 1; i < cmd->argc; ++i) {
+                for (int i = 1; i < cmd->argc; ++i) {
                     // XXX Later, keep track of which strings are copies
                     // XXX (which must be freed) and which are references.
-                    cmd_argv[cmd_argc] = guard_mem(strdup(cmd->argv[i]));
+                    cmd_argv[cmd_argc] = (char *)guard_mem(strdup(cmd->argv[i]));
                     ++cmd_argc;
                 }
             }
@@ -265,7 +265,7 @@ run_interpret_linebuf(cmd_t *cmd, linebuf_t *lbuf)
         else {
             strv_alloc(&cmd_strv, 1);
             cmd_argv = cmd_strv.strv;
-            cmd_argv[cmd_argc] = guard_mem(strdup(lbuf->buf));
+            cmd_argv[cmd_argc] = (char *)guard_mem(strdup(lbuf->buf));
             ++cmd_argc;
         }
     }
@@ -281,10 +281,10 @@ run_interpret_linebuf(cmd_t *cmd, linebuf_t *lbuf)
     if (opt_append_argv && cmd->argc >= 2) {
         strv_alloc(&cmd_strv, cmd->argc - 1);
         cmd_argv = cmd_strv.strv;
-        for (size_t i = 1; i < cmd->argc; ++i) {
+        for (int i = 1; i < cmd->argc; ++i) {
             // XXX Later, keep track of which strings are copies
             // XXX (which must be freed) and which are references.
-            cmd_argv[cmd_argc] = guard_mem(strdup(cmd->argv[i]));
+            cmd_argv[cmd_argc] = (char *)guard_mem(strdup(cmd->argv[i]));
             ++cmd_argc;
         }
     }
@@ -313,7 +313,11 @@ run_interpret_stream(cmd_t *cmd, FILE *xf, char *xfname)
     linebuf_t *lbuf;
     int rv;
 
-    dbg_printf("run_interpret_stream\n");
+    if (debug) {
+        dbg_printf("run_interpret_stream: xfname=[");
+        fshow_fname(dbgprint_fh, xfname);
+        dbg_printf("]\n");
+    }
     lbuf = linebuf_new();
     linebuf_init(lbuf, xf);
     rv = run_interpret_linebuf(cmd, lbuf);
