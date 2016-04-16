@@ -29,6 +29,8 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#include <libexplain/open.h>
+
 int
 set_stdin(cmd_t *cmd, const char *fname)
 {
@@ -61,6 +63,7 @@ set_write_fd(int fd, cmd_t *cmd, const char *fname, bool append, bool new_file)
     int old_fd;
     int new_fd;
     int o_flags;
+    int o_mode;
 
     if (new_file) {
         int rv;
@@ -78,11 +81,24 @@ set_write_fd(int fd, cmd_t *cmd, const char *fname, bool append, bool new_file)
     if (append) {
         o_flags |= O_APPEND;
     }
-    old_fd = open(fname, o_flags, S_IRUSR|S_IWUSR);
+
+    o_mode = S_IRUSR|S_IWUSR;
+    old_fd = open(fname, o_flags, o_mode);
     if (old_fd == -1) {
-        cmd->ioerr = errno;
-        return (errno);
+        char msg[3000];
+        int err;
+
+        err = errno;
+        explain_message_errno_open(msg, sizeof(msg), err, fname, o_flags, o_mode);
+        explain_fmt_fopen(msg);
+        if (err != ENOENT) {
+            // XXX Find real offending file, might be higher up.
+            lsdlh(fname);
+        }
+        cmd->ioerr = err;
+        return (err);
     }
+
     new_fd = dup2(old_fd, fd);
     if (new_fd == -1) {
         cmd->ioerr = errno;
