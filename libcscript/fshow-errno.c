@@ -31,7 +31,7 @@
 #include <string.h>	// Import strerror_r()
 
 void
-fshow_errno(FILE *f, char *msg, int err)
+fshow_errno(FILE *f, char const *msg, int err)
 {
     char esymbuf[12];
     char estrbuf[100];
