@@ -54,8 +54,10 @@ typedef enum encoding encoding_t;
 
 // After fork(), if any, and before exec()
 //
-extern void cmd_chdir(cmd_t *, const char *dir);
-extern void cmd_umask(cmd_t *, const char *mask);
+extern int cmd_chdir(cmd_t *, const char *dir);
+extern int cmd_umask(cmd_t *, const char *mask);
+extern int cmd_clearenv(cmd_t *, const char *arg);
+extern int cmd_env(cmd_t *, const char *arg);
 extern int set_stdin (cmd_t *, const char *fname);
 extern int set_stdout(cmd_t *, const char *fname, bool append, bool new_file);
 extern int set_stderr(cmd_t *, const char *fname, bool append, bool new_file);

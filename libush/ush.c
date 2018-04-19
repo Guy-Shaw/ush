@@ -69,6 +69,8 @@ enum opt {
     OPT_SET_STDERR,
     OPT_SET_STDERR_APPEND,
     OPT_SET_STDERR_NEW,
+    OPT_CLEARENV,
+    OPT_ENV,
     OPT_UMASK,
     OPT_CLOSE_FROM,
     OPT_REPLACE,
@@ -92,6 +94,8 @@ static struct option long_options[] = {
     {"stderr-append",     required_argument, 0,  OPT_SET_STDERR_APPEND},
     {"stderr-new",        required_argument, 0,  OPT_SET_STDERR_NEW},
     {"chdir",             required_argument, 0,  OPT_CHDIR},
+    {"clearenv",          no_argument,       0,  OPT_CLEARENV},
+    {"env",               required_argument, 0,  OPT_ENV},
     {"umask",             required_argument, 0,  OPT_UMASK},
     {"close-from",        required_argument, 0,  OPT_CLOSE_FROM},
     {"replace",           required_argument, 0,  OPT_REPLACE},
@@ -117,6 +121,8 @@ static const char usage_text[] =
     "  --close-from    <fd>\n"
     "  --chdir         <directory>\n"
     "  --fork\n"
+    "  --clearenv      Clear the environment\n"
+    "  --env           identifier=value\n"
     "  --append-argv\n"
     "  --replace       <string>\n"
     "  --encoding      text|null|qp|xnn\n"
@@ -127,7 +133,7 @@ static const char version_text[] =
     ;
 
 static const char copyright_text[] =
-    "Copyright (C) 2016 Guy Shaw\n"
+    "Copyright (C) 2016-2018 Guy Shaw\n"
     "Written by Guy Shaw\n"
     ;
 
@@ -304,10 +310,16 @@ ush_getopt(cmd_t *cmd, int argc, char **argv, bool setargv)
             cmd->cmd_fork = true;
             break;
         case OPT_CHDIR:
-            cmd_chdir(cmd, optarg);
+            rv = cmd_chdir(cmd, optarg);
             break;
         case OPT_UMASK:
-            cmd_umask(cmd, optarg);
+            rv = cmd_umask(cmd, optarg);
+            break;
+        case OPT_CLEARENV:
+            rv = cmd_clearenv(cmd, optarg);
+            break;
+        case OPT_ENV:
+            rv = cmd_env(cmd, optarg);
             break;
         case OPT_SET_STDIN:
             rv = set_stdin(cmd, optarg);

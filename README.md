@@ -163,6 +163,14 @@ so the current process is overwritten by `exec()`.
 
 Change directory to _dir_ before running the program.
 
+--clearenv
+
+Clear the environment before running the program.
+
+--env _identifier_=_value_
+
+Set an environment variable before running the program.
+
 --umask=_mask_
 
 Call `umask()` before running the program.
@@ -231,6 +239,7 @@ If either of the environment variables, `USH_DEBUG` and `USH_VERBOSE`
 is present, then it is as if the `--debug` or `--verbose` options
 were given on the command-line or in the command/option section
 of a script.
+
 This is because it can be easier to turn on and off in the
 environment, rather than edit a script file.
 
@@ -357,6 +366,10 @@ Note also that quote marks do not do any good here.
 They do not serve to ensure that the time-style argument
 is not broken into words.  That does not happen in the first place.
 Quote marks of any kind are not special.
+
+## License
+
+See the file `LICENSE.md`
 
 -- Guy Shaw
 

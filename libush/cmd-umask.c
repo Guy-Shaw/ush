@@ -108,7 +108,7 @@ parse_umask(const char *mask_str, mode_t *ret)
     return (0);
 }
 
-void
+int
 cmd_umask(cmd_t *cmd, const char *mask_str)
 {
     int rv;
@@ -122,7 +122,7 @@ cmd_umask(cmd_t *cmd, const char *mask_str)
             eprintf("Invalid umask, '%s'.\n", mask_str);
             eprintf("umask must be in 0..0777 (octal).\n");
             cmd->ioerr = ERANGE;
-            return;
+            return (ERANGE);
         }
         mask = (mode_t)lmask;
         have_mask = true;
@@ -134,10 +134,11 @@ cmd_umask(cmd_t *cmd, const char *mask_str)
             eprintf("Invalid umask, '%s'.\n", mask_str);
             fshow_errno(errprint_fh, " ", rv);
             cmd->ioerr = rv;
-            return;
+            return (rv);
         }
         have_mask = true;
     }
 
     rv = umask(mask);
+    return (rv);
 }

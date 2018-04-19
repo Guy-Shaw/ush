@@ -4,7 +4,7 @@ OBJECTS := $(patsubst %.c, %.o, $(SOURCES))
 
 CC := gcc
 CPPFLAGS := -I../inc
-CFLAGS := -std=c99 -Wall -Wextra -g
+CFLAGS := -std=c99 -Wall -Wextra -g -fPIC
 
 .PHONY: all install clean show-targets
 

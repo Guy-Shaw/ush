@@ -41,7 +41,7 @@
  * Status is not returned.  Rather, the status is recorded in |cmd|.
  *
  */
-void
+int
 cmd_chdir(cmd_t *cmd, const char *dir)
 {
     int rv;
@@ -49,7 +49,7 @@ cmd_chdir(cmd_t *cmd, const char *dir)
 
     rv = chdir(dir);
     if (rv == 0) {
-        return;
+        return (rv);
     }
 
     err = errno;
@@ -69,4 +69,5 @@ cmd_chdir(cmd_t *cmd, const char *dir)
     }
 
     cmd->ioerr = err;
+    return (err);
 }

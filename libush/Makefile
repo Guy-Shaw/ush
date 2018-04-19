@@ -4,7 +4,7 @@ SOURCES := $(wildcard *.c)
 OBJECTS := $(patsubst %.c, %.o, $(SOURCES))
 
 CC := gcc
-CFLAGS += -std=c99 -Wall -Wextra -g
+CFLAGS += -std=c99 -Wall -Wextra -g -fPIC
 CPPFLAGS := -I../inc
 
 .PHONY: all clean
